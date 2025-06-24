@@ -24,7 +24,7 @@ chains:
     nodes:
       - rpc: 'https://rpc-internal.dognet.mitosis.org/cc/rpc'
         api: 'https://rpc-internal.dognet.mitosis.org/cc/api' 
-        # grpc: 'grpc-internal.dognet.mitosis.org:443' Not working at the moment
+        grpc: 'grpc-internal.dognet.mitosis.org:443'  # Try this gRPC endpoint
       
       # You can add multiple endpoints for redundancy:
       # - rpc: 'http://your-backup-rpc:26657'

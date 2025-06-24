@@ -1,4 +1,16 @@
 ---
+mitosis-dognet-1:
+  chain_name: dognet
+  protocol_type: cosmos
+  mainnet: false
+  support_asset:
+    denom: ustake
+    decimal: 6
+  packages:
+    - block
+    - upgrade
+    - uptime
+    - voteindexer
 0x5ec: #1516
   chain_name: story
   protocol_type: ethereum
