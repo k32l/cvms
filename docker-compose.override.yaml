@@ -1,0 +1,114 @@
+# Docker Compose Override for existing Prometheus/Grafana setup
+# This only runs the CVMS components you need
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: 100m
+      max-file: '3'
+      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
+
+services:
+  # Only run the CVMS exporter (metrics provider)
+  exporter:
+    <<: *logging
+    build: .
+    image: cosmostation/cvms:latest
+    container_name: cvms-exporter
+    restart: unless-stopped
+    ports: ['9200:9200']  # Expose metrics on port 9200
+    entrypoint: [/bin/cvms]
+    command:
+      [
+        start,
+        exporter,
+        --config=/var/lib/cvms/config.yaml,
+        --log-color-disable=false,
+        --log-level=4,
+        --port=9200,
+      ]
+    volumes:
+      - ./config.yaml:/var/lib/cvms/config.yaml:ro
+      - ./docker/cvms/support_chains.yaml:/var/lib/cvms/docker/cvms/support_chains.yaml:ro
+      - ./docker/cvms/custom_chains.yaml:/var/lib/cvms/docker/cvms/custom_chains.yaml:ro
+    networks:
+      - cvms-net
+
+  # CVMS indexer for historical data
+  indexer:
+    <<: *logging
+    build: .
+    image: cosmostation/cvms:latest
+    container_name: cvms-indexer
+    restart: unless-stopped
+    ports: ['9300:9300']
+    entrypoint: [/bin/cvms]
+    command:
+      [
+        start,
+        indexer,
+        --config=/var/lib/cvms/config.yaml,
+        --log-color-disable=false,
+        --log-level=4,
+        --port=9300,
+      ]
+    environment:
+      - DB_HOST=cvms-indexer-db
+      - DB_PORT=5432
+      - DB_NAME=cvms
+      - DB_USER=cvms
+      - DB_PASSWORD=mysecretpassword
+      - DB_RETENTION_PERIOD=1h
+    volumes:
+      - ./config.yaml:/var/lib/cvms/config.yaml:ro
+      - ./docker/cvms/support_chains.yaml:/var/lib/cvms/docker/cvms/support_chains.yaml:ro
+      - ./docker/cvms/custom_chains.yaml:/var/lib/cvms/docker/cvms/custom_chains.yaml:ro
+    networks:
+      - cvms-net
+    depends_on:
+      - postgres
+
+  # PostgreSQL for indexer historical data
+  postgres:
+    <<: *logging
+    image: postgres:16.4
+    container_name: cvms-indexer-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cvms
+      POSTGRES_USER: cvms
+      POSTGRES_PASSWORD: mysecretpassword
+    ports:
+      - 5432:5432
+    networks:
+      - cvms-net
+    volumes:
+      - ./docker/postgres/schema:/docker-entrypoint-initdb.d/:ro
+      - indexer-db-volume:/var/lib/postgresql/data
+
+  # Disable services you already have running
+  prometheus:
+    profiles: ["disabled"]
+  
+  grafana:
+    profiles: ["disabled"]
+    
+  alertmanager:
+    profiles: ["disabled"]
+    
+  promtail:
+    profiles: ["disabled"]
+    
+  loki:
+    profiles: ["disabled"]
+    
+  cadvisor:
+    profiles: ["disabled"]
+
+volumes:
+  indexer-db-volume:
+
+networks:
+  cvms-net:
+    driver: bridge

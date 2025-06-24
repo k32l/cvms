@@ -15,8 +15,8 @@ tests/test.go
 
 # prod envs
 .env
-config.yaml
-docker-compose.override.yaml
+# config.yaml
+# docker-compose.override.yaml
 custom-prometheus.yaml
 
 **/custom_rules/*.yaml

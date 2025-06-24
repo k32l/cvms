@@ -1,0 +1,21 @@
+# Add this job to your existing Prometheus configuration
+# (usually in prometheus.yml under the scrape_configs section)
+
+scrape_configs:
+  # Your existing jobs...
+  
+  # CVMS Exporter job
+  - job_name: 'cvms-exporter'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    static_configs:
+      - targets: ['localhost:9200']  # Adjust if CVMS is running on different host
+    metrics_path: /metrics
+    
+  # CVMS Indexer job (optional - for indexer-specific metrics) 
+  - job_name: 'cvms-indexer'
+    scrape_interval: 60s
+    scrape_timeout: 10s
+    static_configs:
+      - targets: ['localhost:9300']  # Adjust if CVMS is running on different host
+    metrics_path: /metrics
