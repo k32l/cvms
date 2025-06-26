@@ -1,0 +1,35 @@
+# Add these scrape_configs to your existing Prometheus configuration
+# This will collect metrics from both CVMS and the custom validator exporter
+
+scrape_configs:
+  # Your existing scrape jobs...
+  
+  # CVMS Exporter - Chain health and block metrics
+  - job_name: 'cvms-exporter'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    static_configs:
+      - targets: ['localhost:9200']
+    metrics_path: /metrics
+    honor_labels: true
+    
+  # CVMS Indexer - Historical data metrics (limited due to issues)
+  - job_name: 'cvms-indexer'
+    scrape_interval: 60s
+    scrape_timeout: 10s
+    static_configs:
+      - targets: ['localhost:9300']
+    metrics_path: /metrics
+    honor_labels: true
+    
+  # Custom Dognet Validator Exporter - Real-time validator metrics
+  - job_name: 'dognet-validators'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    static_configs:
+      - targets: ['localhost:9201']
+    metrics_path: /metrics
+    honor_labels: true
+
+# Note: Adjust target addresses if CVMS is running on a different host
+# Example for remote host: ['your-cvms-host:9200'] 

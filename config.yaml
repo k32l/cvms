@@ -7,20 +7,10 @@ monikers: ['all']
 chains:
   - display_name: 'dognet'
     chain_id: mitosis-dognet-1
-    tracking_addresses:
-      # Your validators
-      - '0xe5dC873249747226b717D6ab38DD734c81bAEe66'  # Genesis validator (101M MITO)
-      - '0x29A22EC5BB181935E8B1DF6714547D2DBDF66A1B'  # Corgi validator
-      
-      # Other validators discovered via Blockscout analysis
-      - '0x2bc375f21009c47eab45974b7f06d83191c38bd5'  # Large validator (71.2M MITO)
-      - '0x9c57bf6317b1b8bfe0bd8c415c2e11c7b6e0b95d'  # Medium validator (101.6K MITO)
-      - '0x46dbb393064d6c08237b405cce73be505b49dd18'  # Large validator (3.03M MITO)
-      - '0xa00112971fe743e4a26f99c511d1c4376a1e1039'  # Small validator (100 MITO)
-      
-      # Note: 8 more validators exist in the network (from 14 total found in consensus)
-      # but their EVM addresses couldn't be easily discovered through transaction analysis.
-      # Network mode will still monitor ALL validators regardless of tracking_addresses.
+    tracking_addresses: []
+      # Disabled balance tracking due to address format issues
+      # In network mode, CVMS monitors all validators regardless of tracking_addresses
+      # If you need balance tracking, add bech32 format addresses (dognet1...)
     nodes:
       - rpc: 'https://rpc-internal.dognet.mitosis.org/cc/rpc'
         api: 'https://rpc-internal.dognet.mitosis.org/cc/api' 

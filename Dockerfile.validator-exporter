@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+# Install dependencies
+RUN pip install requests prometheus_client
+
+# Copy the exporter script
+COPY validator_exporter.py /app/validator_exporter.py
+
+# Set working directory
+WORKDIR /app
+
+# Make script executable
+RUN chmod +x validator_exporter.py
+
+# Expose metrics port
+EXPOSE 9201
+
+# Run the exporter
+CMD ["python", "validator_exporter.py"] 

@@ -40,3 +40,15 @@ services:
   cadvisor:
     deploy:
       replicas: 0
+
+  # Custom validator exporter to complement CVMS
+  validator-exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile.validator-exporter
+    container_name: dognet-validator-exporter
+    restart: unless-stopped
+    ports:
+      - "9201:9201"
+    networks:
+      - cvms-net
